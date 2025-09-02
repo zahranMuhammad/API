@@ -6,9 +6,52 @@ use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-
 class ProdukController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/produk",
+     *     summary="Ambil semua produk",
+     *     tags={"Produk"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="filter[nama]",
+     *         in="query",
+     *         description="Filter produk berdasarkan nama",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="filter[harga]",
+     *         in="query",
+     *         description="Filter produk berdasarkan harga",
+     *         required=false,
+     *         @OA\Schema(type="number")
+     *     ),
+     *     @OA\Parameter(
+     *         name="filter[rating]",
+     *         in="query",
+     *         description="Filter produk berdasarkan rating",
+     *         required=false,
+     *         @OA\Schema(type="number")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Berhasil ambil daftar produk",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="produk", type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="nama", type="string", example="Sepatu Running"),
+     *                     @OA\Property(property="harga", type="number", example=250000),
+     *                     @OA\Property(property="rating", type="number", example=4.5),
+     *                     @OA\Property(property="gambar_produk", type="string", example="sepatu.png")
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function index(Request $request)
     {
         $produk = Produk::orderBy('id', 'DESC');
@@ -38,9 +81,44 @@ class ProdukController extends Controller
         ], 200);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/produk",
+     *     summary="Tambah produk baru",
+     *     tags={"Produk"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"nama","harga","rating","gambar_produk"},
+     *             @OA\Property(property="nama", type="string", example="Sepatu Futsal"),
+     *             @OA\Property(property="harga", type="number", example=150000),
+     *             @OA\Property(property="rating", type="number", example=4.2),
+     *             @OA\Property(property="gambar_produk", type="string", example="futsal.jpg")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Produk berhasil ditambahkan",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Produk berhasil ditambahkan"),
+     *             @OA\Property(property="produk", type="object",
+     *                 @OA\Property(property="id", type="integer", example=2),
+     *                 @OA\Property(property="nama", type="string", example="Sepatu Futsal"),
+     *                 @OA\Property(property="harga", type="number", example=150000),
+     *                 @OA\Property(property="rating", type="number", example=4.2),
+     *                 @OA\Property(property="gambar_produk", type="string", example="futsal.jpg")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Validasi gagal / produk sudah ada"
+     *     )
+     * )
+     */
     public function store(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'nama' => 'required|min:3|max:255',
             'harga' => 'required|numeric',
@@ -48,7 +126,6 @@ class ProdukController extends Controller
             'gambar_produk' => 'required|min:3'
         ]);
 
-        // Jika validasi gagal
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation Error',
@@ -64,13 +141,13 @@ class ProdukController extends Controller
             ], 400);
         }
 
-        // Membuat user baru
         $produk = Produk::create([
             'nama' => $request->nama,
             'harga' => $request->harga,
             'rating' => $request->rating,
             'gambar_produk' => $request->gambar_produk
         ]);
+
         return response()->json([
             'message' => 'Produk berhasil ditambahkan',
             'produk' => $produk

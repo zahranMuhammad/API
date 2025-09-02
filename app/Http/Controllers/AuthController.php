@@ -10,9 +10,38 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/register",
+     *     tags={"Auth"},
+     *     summary="Register user baru",
+     *     description="Mendaftarkan user baru ke dalam sistem.",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"nama","email","alamat","password","password_confirmation"},
+     *             @OA\Property(property="nama", type="string", example="Jamaludin Raka"),
+     *             @OA\Property(property="email", type="string", format="email", example="jamal@example.com"),
+     *             @OA\Property(property="alamat", type="string", example="Jl. Merdeka No. 123"),
+     *             @OA\Property(property="password", type="string", format="password", example="password123"),
+     *             @OA\Property(property="password_confirmation", type="string", format="password", example="password123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Berhasil Register",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Berhasil Register Sekarang Silakan Login")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Validation Error"
+     *     )
+     * )
+     */
     public function register(Request $request)
     {
-        // Validasi inputan
         $validator = Validator::make($request->all(), [
             'nama' => 'required|min:2|max:255',
             'email' => 'required|email|unique:users,email',
@@ -20,7 +49,6 @@ class AuthController extends Controller
             'password' => 'required|confirmed|min:8'
         ]);
 
-        // Jika validasi gagal
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation Error',
@@ -28,23 +56,48 @@ class AuthController extends Controller
             ], 400);
         }
 
-        // Membuat user baru
-        $user = User::create([
+        User::create([
             'nama' => $request->nama,
             'email' => $request->email,
             'alamat' => $request->alamat,
             'password' => Hash::make($request->password)
         ]);
 
-        // Mengembalikan respons sukses dengan pesan dan data user beserta token
         return response()->json([
-            'message' => 'Berhasil Register Sekarang Silakan Login',  // Pesan sukses
-        ], 201); // 201 adalah status untuk resource yang baru dibuat
+            'message' => 'Berhasil Register Sekarang Silakan Login',
+        ], 201);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/login",
+     *     tags={"Auth"},
+     *     summary="Login user",
+     *     description="Login user menggunakan email dan password untuk mendapatkan token.",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","password"},
+     *             @OA\Property(property="email", type="string", format="email", example="jamal@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="password123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Login Berhasil",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="token", type="string", example="1|qwertyuiop123456"),
+     *             @OA\Property(property="message", type="string", example="Berhasil Login")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     )
+     * )
+     */
     public function login(Request $request)
     {
-        // Validasi input untuk login
         $validator = Validator::make($request->all(),[
             'email' => 'required|email',
             'password' => 'required|min:8'
@@ -54,24 +107,42 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        // Mencari user berdasarkan email
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
-                'message' => 'Unauthorized', // Pesan jika login gagal
-            ], 401);  // Status 401 untuk Unauthorized
+                'message' => 'Unauthorized',
+            ], 401);
         }
 
-        // Generate token jika login berhasil
         $token = $user->createToken('lks_api')->plainTextToken;
 
         return response()->json([
             'token' => $token,
             'message' => 'Berhasil Login'
-        ], 200); // Status 200 untuk OK
+        ], 200);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/logout",
+     *     tags={"Auth"},
+     *     summary="Logout user",
+     *     description="Logout user dengan menghapus semua token aktif.",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Logout Berhasil",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Berhasil Logout")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     )
+     * )
+     */
     public function logout()
     {
         Auth::user()->tokens()->delete();
@@ -81,6 +152,25 @@ class AuthController extends Controller
         ], 200);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/profile",
+     *     tags={"Auth"},
+     *     summary="Profil user login",
+     *     description="Mengambil data profil user yang sedang login.",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Data Profil",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer", example=1),
+     *             @OA\Property(property="nama", type="string", example="Zahran Muhammad"),
+     *             @OA\Property(property="email", type="string", example="zahran@example.com"),
+     *             @OA\Property(property="alamat", type="string", example="Jl. Merdeka No. 123"),
+     *         )
+     *     )
+     * )
+     */
     public function profile(Request $request)
     {
         return response()->json($request->user());
@@ -92,5 +182,4 @@ class AuthController extends Controller
             'message' => 'Login Dulu'
         ], 400);
     }
-
 }

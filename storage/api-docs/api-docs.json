@@ -1,0 +1,532 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Dokumentasi E-Commerce",
+        "description": "Dokumentasi API untuk projek E-Commerce Laravel",
+        "contact": {
+            "email": "zahranmhhhhhh@gmail.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000/api",
+            "description": "Local API Server"
+        },
+        {
+            "url": "/api"
+        }
+    ],
+    "paths": {
+        "/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register user baru",
+                "description": "Mendaftarkan user baru ke dalam sistem.",
+                "operationId": "0903f2e0df1a8857bee538fc055417f0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama",
+                                    "email",
+                                    "alamat",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "nama": {
+                                        "type": "string",
+                                        "example": "Jamaludin Raka"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "jamal@example.com"
+                                    },
+                                    "alamat": {
+                                        "type": "string",
+                                        "example": "Jl. Merdeka No. 123"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Berhasil Register",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Berhasil Register Sekarang Silakan Login"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation Error"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login user",
+                "description": "Login user menggunakan email dan password untuk mendapatkan token.",
+                "operationId": "2dd578ff7aba2721293dac66833b27d1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "jamal@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login Berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|qwertyuiop123456"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Berhasil Login"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout user",
+                "description": "Logout user dengan menghapus semua token aktif.",
+                "operationId": "1deead8175ec826e4eff4671de92fbf3",
+                "responses": {
+                    "200": {
+                        "description": "Logout Berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Berhasil Logout"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/profile": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Profil user login",
+                "description": "Mengambil data profil user yang sedang login.",
+                "operationId": "e92c58f994e8be6e19813ce20425f83e",
+                "responses": {
+                    "200": {
+                        "description": "Data Profil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "nama": {
+                                            "type": "string",
+                                            "example": "Zahran Muhammad"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "zahran@example.com"
+                                        },
+                                        "alamat": {
+                                            "type": "string",
+                                            "example": "Jl. Merdeka No. 123"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/transaksi": {
+            "post": {
+                "tags": [
+                    "Transaksi"
+                ],
+                "summary": "Buat transaksi penjualan baru",
+                "description": "Membuat transaksi penjualan dengan beberapa produk sekaligus",
+                "operationId": "5ec03f72cf1d6ea50d694982a8e3d600",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "produks": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "produk_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "qty": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Transaksi berhasil dibuat",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Berhasil"
+                                        },
+                                        "penjualan_id": {
+                                            "type": "integer",
+                                            "example": 10
+                                        },
+                                        "detail": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "produk_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "qty": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    },
+                                                    "total": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 40000
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validasi gagal"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/produk": {
+            "get": {
+                "tags": [
+                    "Produk"
+                ],
+                "summary": "Ambil semua produk",
+                "operationId": "b5bb4927f9ba0bb6ca925c3abaf93ce4",
+                "parameters": [
+                    {
+                        "name": "filter[nama]",
+                        "in": "query",
+                        "description": "Filter produk berdasarkan nama",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "filter[harga]",
+                        "in": "query",
+                        "description": "Filter produk berdasarkan harga",
+                        "required": false,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "filter[rating]",
+                        "in": "query",
+                        "description": "Filter produk berdasarkan rating",
+                        "required": false,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil ambil daftar produk",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "produk": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nama": {
+                                                        "type": "string",
+                                                        "example": "Sepatu Running"
+                                                    },
+                                                    "harga": {
+                                                        "type": "number",
+                                                        "example": 250000
+                                                    },
+                                                    "rating": {
+                                                        "type": "number",
+                                                        "example": 4.5
+                                                    },
+                                                    "gambar_produk": {
+                                                        "type": "string",
+                                                        "example": "sepatu.png"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Produk"
+                ],
+                "summary": "Tambah produk baru",
+                "operationId": "b19ea02c062be79eb7a0cc6e9bc24d70",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama",
+                                    "harga",
+                                    "rating",
+                                    "gambar_produk"
+                                ],
+                                "properties": {
+                                    "nama": {
+                                        "type": "string",
+                                        "example": "Sepatu Futsal"
+                                    },
+                                    "harga": {
+                                        "type": "number",
+                                        "example": 150000
+                                    },
+                                    "rating": {
+                                        "type": "number",
+                                        "example": 4.2
+                                    },
+                                    "gambar_produk": {
+                                        "type": "string",
+                                        "example": "futsal.jpg"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Produk berhasil ditambahkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Produk berhasil ditambahkan"
+                                        },
+                                        "produk": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "nama": {
+                                                    "type": "string",
+                                                    "example": "Sepatu Futsal"
+                                                },
+                                                "harga": {
+                                                    "type": "number",
+                                                    "example": 150000
+                                                },
+                                                "rating": {
+                                                    "type": "number",
+                                                    "example": 4.2
+                                                },
+                                                "gambar_produk": {
+                                                    "type": "string",
+                                                    "example": "futsal.jpg"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validasi gagal / produk sudah ada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "Masukkan token Sanctum di sini. Contoh: Bearer 1|yourapitokenhere"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "Transaksi",
+            "description": "Transaksi"
+        },
+        {
+            "name": "Produk",
+            "description": "Produk"
+        }
+    ],
+    "security": [
+        {
+            "bearerAuth": []
+        }
+    ]
+}
